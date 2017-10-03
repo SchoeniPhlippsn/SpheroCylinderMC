@@ -14,7 +14,7 @@ void RenewList(){ // Initialise Neighbour List
 	for( int i=0; i<Config.head.size(); i++) Config.head[i] = -1;
 	for( int i=0; i<Config.link.size(); i++) Config.link[i] = -1;
 
-	for( int i=0; i<Config.part.size(); i++){ 
+	for( int i=Config.Nc; i<Config.part.size(); i++){ 
 	    
         sx = Config.part[i].pos[0]*Config.w[0];
         if(sx==Config.W[0]) sx = Config.W[0] - 1; 

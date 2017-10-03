@@ -10,6 +10,8 @@ void Move_step(){
        
         MovedParticle = Config.part[randP];         
 
+        bool inside = false;
+
         if( randP < Config.Nc ){
 
             if( 2*uni(gen) < 1 ){
@@ -45,76 +47,70 @@ void Move_step(){
                 MovedParticle.ori[2] *= norm;
             }
 
+            for( int vv = 0; vv < Config.part.size() && !inside; vv++ ){
+                if(randP==vv) continue;
+                if(vv < Config.Nc ){
+                    if(overlapSP(MovedParticle,Config.part[vv], Config.l)) inside=true; 
+                }else{
+                    if(overlapSPSPH(MovedParticle,Config.part[vv], Config.l)) inside=true;
+                }
+            }
+
         }else{
             MovedParticle.pos[0] = MovedParticle.pos[0] + (uni(gen)-0.5)*pos_lambda;
             MovedParticle.pos[1] = MovedParticle.pos[1] + (uni(gen)-0.5)*pos_lambda;
             MovedParticle.pos[2] = MovedParticle.pos[2] + (uni(gen)-0.5)*pos_lambda;
-        }
 
-        bool inside = false;
+            for( int vv = 0; vv < Config.Nc && !inside; vv++ ){
+                if(overlapSPSPH(Config.part[vv],MovedParticle, Config.l)) inside=true; 
+            }
 
-        sx = MovedParticle.pos[0]*Config.w[0];
-        if(sx==Config.W[0]) sx = Config.W[0]-1;
-        sy = MovedParticle.pos[1]*Config.w[1];
-        if(sy==Config.W[1]) sy = Config.W[1]-1;
-        sz = MovedParticle.pos[2]*Config.w[2];
-        if(sz==Config.W[2]) sz = Config.W[2]-1;
+            if(!inside){
+                sx = MovedParticle.pos[0]*Config.w[0];
+                if(sx==Config.W[0]) sx = Config.W[0]-1;
+                sy = MovedParticle.pos[1]*Config.w[1];
+                if(sy==Config.W[1]) sy = Config.W[1]-1;
+                sz = MovedParticle.pos[2]*Config.w[2];
+                if(sz==Config.W[2]) sz = Config.W[2]-1;
 
-        int sx_max = sx + 1;
-        int sy_max = sy + 1;
-        int sz_max = sz + 1;
-        
-        int sx_min = sx - 1;
-        int sy_min = sy - 1;
-        int sz_min = sz - 1;
+                int sx_max = sx + 1;
+                int sy_max = sy + 1;
+                int sz_max = sz + 1;
+                
+                int sx_min = sx - 1;
+                int sy_min = sy - 1;
+                int sz_min = sz - 1;
 
-        for (int ix=sx_min; ix <= sx_max && !inside; ix++){
-            int kx = ix;
-            if(kx == Config.W[0]) kx =0;
-            else if(kx == -1) kx = Config.W[0]-1;
+                for (int ix=sx_min; ix <= sx_max && !inside; ix++){
+                    int kx = ix;
+                    if(kx == Config.W[0]) kx =0;
+                    else if(kx == -1) kx = Config.W[0]-1;
 
-            for (int iy=sy_min; iy <= sy_max && !inside; iy++){
-                int ky = iy;
-                if(ky == Config.W[1]) ky =0;
-                else if(ky == -1) ky = Config.W[1]-1;
-                for (int iz=sz_min; iz <= sz_max && !inside; iz++){
-                    int kz = iz; 
-                    if(kz == Config.W[2]) kz =0;
-                    else if(kz == -1) kz = Config.W[2]-1;
+                    for (int iy=sy_min; iy <= sy_max && !inside; iy++){
+                        int ky = iy;
+                        if(ky == Config.W[1]) ky =0;
+                        else if(ky == -1) ky = Config.W[1]-1;
+                        for (int iz=sz_min; iz <= sz_max && !inside; iz++){
+                            int kz = iz; 
+                            if(kz == Config.W[2]) kz =0;
+                            else if(kz == -1) kz = Config.W[2]-1;
 
-                    int k = kx + Config.W[0]*(ky + Config.W[1]*kz);
-    
-                    int vv = Config.head[k];
-                    
-                    while(vv != -1 && !inside){
-                        if(randP != vv ){
-                            if(randP < Config.Nc){
-                                if(vv < Config.Nc ){
-                                    if(overlapSP(MovedParticle,Config.part[vv], Config.l)){
-                                        inside=true; 
-                                    }
-                                }else{
-                                    if(overlapSPSPH(MovedParticle,Config.part[vv], Config.l)){
-                                        inside=true; 
-                                    }
+                            int k = kx + Config.W[0]*(ky + Config.W[1]*kz);
+            
+                            int vv = Config.head[k];
+                            
+                            while(vv != -1 && !inside){
+                                if(randP != vv ){
+                                    if(overlapSPH(MovedParticle,Config.part[vv], Config.l)) inside=true; 
                                 }
-                            }else{
-                                if(vv < Config.Nc ){
-                                    if(overlapSPSPH(Config.part[vv],MovedParticle, Config.l)){
-                                        inside=true; 
-                                    }
-                                }else{
-                                    if(overlapSPH(MovedParticle,Config.part[vv], Config.l)){
-                                        inside=true; 
-                                    }
-                                }
+                                vv = Config.link[vv];
                             }
                         }
-                        vv = Config.link[vv];
                     }
                 }
             }
         }
+
 
 
         if(!inside){
@@ -129,25 +125,27 @@ void Move_step(){
             if( MovedParticle.pos[2] < 0 ) MovedParticle.pos[2] += Config.l[2];
 
             
-            int k = sx + Config.W[0]*(sy + Config.W[1]*sz); 
+            if( randP >= Config.Nc){
+                int k = sx + Config.W[0]*(sy + Config.W[1]*sz); 
 
-            if(MovedParticle.cell != k){
-                if(Config.head[MovedParticle.cell] != randP ){
-                    int v = Config.head[MovedParticle.cell];
-                    int vv = Config.link[v];
-                    while(vv!=randP){ 
-                        v = vv;
-                        vv = Config.link[v];
+                if(MovedParticle.cell != k){
+                    if(Config.head[MovedParticle.cell] != randP ){
+                        int v = Config.head[MovedParticle.cell];
+                        int vv = Config.link[v];
+                        while(vv!=randP){ 
+                            v = vv;
+                            vv = Config.link[v];
+                        }
+                        
+                        Config.link[v] = Config.link[randP];
+                    }else{
+                        Config.head[MovedParticle.cell] = Config.link[randP];
                     }
                     
-                    Config.link[v] = Config.link[randP];
-                }else{
-                    Config.head[MovedParticle.cell] = Config.link[randP];
+                    Config.link[randP] = Config.head[k];
+                    Config.head[k] = randP;
+                    MovedParticle.cell = k;
                 }
-                
-                Config.link[randP] = Config.head[k];
-                Config.head[k] = randP;
-                MovedParticle.cell = k;
             }
 
             Config.part[randP] = MovedParticle;
@@ -179,84 +177,24 @@ void Compression_step(){
     }
     bool inside = false;
 
-    for( int i=0; i < Config.head.size(); i++){
-        int v =Config.head[i];
-
-        while( v != -1 && !inside){
-            int vv = Config.link[v];
-            while( vv != -1 && !inside){
-                if(v < Config.Nc){
-                    if(vv < Config.Nc ){
-                        if(overlapSP(Config.part[v],Config.part[vv], Config.l)) inside=true; 
-                    }else{
-                        if(overlapSPSPH(Config.part[v],Config.part[vv], Config.l)) inside=true; 
-                    }
+    for( int v=0; v < Config.part.size()-1 && !inside; v++){
+        for( int vv=v+1; vv < Config.part.size() && !inside; vv++){
+            if(v < Config.Nc){
+                if(vv < Config.Nc ){
+                    if(overlapSP(Config.part[v],Config.part[vv], Config.l)) inside=true; 
                 }else{
-                    if(vv < Config.Nc ){
-                        if(overlapSPSPH(Config.part[vv],Config.part[v], Config.l)) inside=true; 
-                    }else{
-                        if(overlapSPH(Config.part[v],Config.part[vv], Config.l)) inside=true; 
-                    }
+                    if(overlapSPSPH(Config.part[v],Config.part[vv], Config.l)) inside=true; 
                 }
-                vv = Config.link[vv]; 
-            }
-            v = Config.link[v];
-        }
-
-        if(inside) break; 
-
-        v = Config.head[i];
-
-        sx = i % Config.W[0];
-        int sx_max = sx + 1;
-        
-        sy = (i - sx)/Config.W[0];
-        sy = sy % Config.W[1];
-        int sy_max = sy + 1;
-        
-        sz = (i - sx - sy*Config.W[0])/(Config.W[1]*Config.W[0]) ;
-        int sz_max = sz + 1;
-        
-        while(v != -1 && !inside){
-            for (int ix=sx; ix <= sx_max && !inside; ix++){
-                int kx = ix;
-                if(kx == Config.W[0]) kx =0;
-
-                for (int iy=sy; iy <= sy_max && !inside; iy++){
-                    int ky = iy;
-                    if(ky == Config.W[1]) ky =0;
-                    for (int iz=sz; iz <= sz_max && !inside; iz++){
-                        int kz = iz; 
-                        if(kz == Config.W[2]) kz =0;
-
-                        if(sx == kx && sy == ky && sz == kz) continue;
-
-                        int k = kx + Config.W[0]*(ky + Config.W[1]*kz);
-        
-                        int vv = Config.head[k];
-                        
-                        while(vv != -1 && !inside){
-                            if(v < Config.Nc){
-                                if(vv < Config.Nc ){
-                                    if(overlapSP(Config.part[v],Config.part[vv], Config.l)) inside=true; 
-                                }else{
-                                    if(overlapSPSPH(Config.part[v],Config.part[vv], Config.l)) inside=true; 
-                                }
-                            }else{
-                                if(vv < Config.Nc ){
-                                    if(overlapSPSPH(Config.part[vv],Config.part[v], Config.l)) inside=true; 
-                                }else{
-                                    if(overlapSPH(Config.part[v],Config.part[vv], Config.l)) inside=true; 
-                                }
-                            }
-                            vv = Config.link[vv];
-                        }
-                    }
+            }else{
+                if(vv < Config.Nc ){
+                    if(overlapSPSPH(Config.part[vv],Config.part[v], Config.l)) inside=true; 
+                }else{
+                    if(overlapSPH(Config.part[v],Config.part[vv], Config.l)) inside=true; 
                 }
             }
-            v = Config.link[v];
         }
     }
+
     if(!inside){ 
         Config.Vbox = Vn;
         Config.rhoN = N/Config.Vbox; 
@@ -291,16 +229,17 @@ void Compression_step(){
         std::cout << "Compession unsuccessful! New vproc=" << vproc << std::endl;
         std::cout << "(lx,ly,lz) = (" << Config.l[0] << "," << Config.l[1] << "," << Config.l[2] << ")"<< std::endl;
         if (acceptance > 0.7){
-            if( pos_lambda < maxpos) pos_lambda += 0.1;
+            if( pos_lambda < maxpos) pos_lambda += 0.05;
             else pos_lambda = maxpos;
-            if( ori_lambda < maxpos) ori_lambda += 0.02;
+            if( ori_lambda < maxpos) ori_lambda += 0.05;
             else ori_lambda = maxpos;
             std::cout << "and changed pos_lambda=" << pos_lambda << " and ori_lambda=" <<  ori_lambda << std::endl;
         }
         if (acceptance < 0.5){
             if( pos_lambda < 0.01 ) pos_lambda *= 0.5;
             else pos_lambda -= 0.01;
-            if( ori_lambda > 0.01 ) ori_lambda -= 0.01;
+            if( ori_lambda < 0.01 ) ori_lambda *= 0.5;
+            else ori_lambda -= 0.01;
             std::cout << "and changed pos_lambda=" << pos_lambda << " and ori_lambda=" <<  ori_lambda << std::endl;
         }
     }

@@ -15,47 +15,47 @@ bool overlapSPSPH ( class teilchen cone, class teilchen sphere, std::vector<doub
     if(Rsq > (sphere.r+cone.Rdist+cone.R)*(sphere.r+cone.Rdist+cone.R) ) return false;
     else{
         double Rw = scal_p(R,cone.ori);
-
-        double norm = Rsq-Rw*Rw;
-        if(norm < 1e-6 ) return true; 
+        double Rw2 = Rw*Rw;
+        double norm = Rsq - Rw2;
+        if(norm > (sphere.r+cone.R)*(sphere.r+cone.R) ) return false;
         else{
-            norm = 1/sqrt(norm);
+            if(norm < 1e-6 ) return true; 
+            else{
+                norm = 1/sqrt(norm);
 
-            std::vector<double> wT=R;
+                std::vector<double> wT=R;
 
-            for (int v = 0; v < 3; v++){
-                wT[v] -= Rw*cone.ori[v];
-                wT[v] *= norm;
-            }
-
-            double RwT = scal_p(R,wT);
-
-            double d = (cone.R-cone.r)/cone.dist; 
-            double b = cone.R-cone.Rdist*d; 
-
-            double RR = Rsq - 2*RwT*b + b*b;
-            double B = Rw - RwT*d + b*d;
-            double D = 1 + d*d;
-        
-            double mu;
-            double distance = sphere.r;
-            mu = B/D;
-
-            if(mu>cone.rdist || mu<-cone.Rdist){
-                if(Rw > 0 ){
-                    mu = cone.rdist;
-                    distance += cone.r;
-                }else{
-                    mu = -cone.Rdist;
-                    distance += cone.R;
+                for (int v = 0; v < 3; v++){
+                    wT[v] -= Rw*cone.ori[v];
+                    wT[v] *= norm;
                 }
-                RR = Rsq - 2*mu*Rw + mu*mu;
-                if(RR < distance*distance) return true;
-                else return false;
-            }else{
-                RR = RR - 2*mu*B + mu*mu*D;
-                if(RR < distance*distance) return true;
-                else return false;
+
+                double RwT = scal_p(R,wT);
+
+                double RR = Rsq - 2*RwT*cone.a + cone.a*cone.a;
+                double B = Rw - RwT*cone.c + cone.a*cone.c;
+                double D = 1 + cone.c*cone.c;
+            
+                double mu;
+                double distance = sphere.r;
+                mu = B/D;
+
+                if(mu>cone.rdist || mu<-cone.Rdist){
+                    if(Rw > 0 ){
+                        mu = cone.rdist;
+                        distance += cone.r;
+                    }else{
+                        mu = -cone.Rdist;
+                        distance += cone.R;
+                    }
+                    RR = Rsq - 2*mu*Rw + mu*mu;
+                    if(RR < distance*distance) return true;
+                    else return false;
+                }else{
+                    RR = RR - 2*mu*B + mu*mu*D;
+                    if(RR < distance*distance) return true;
+                    else return false;
+                }
             }
         }
     }
@@ -146,15 +146,12 @@ bool overlapSP ( class teilchen cone1, class teilchen cone2, std::vector<double>
                                 double w1Tw2 = scal_p(w1T,cone2.ori);
                                 double w1w2 = scal_p(cone1.ori,cone2.ori);
 
-                                double c = (cone2.R-cone2.r)/cone2.dist; 
-                                double a = cone2.R-cone2.Rdist*c; 
-
-                                double RR = Rsq + 2*Rw2T*a - 2*Rw1T*a + a*a - 2*w1Tw2T*a*a + a*a;
-                                double A = Rw2 + Rw2T*c - c*a - a*w1Tw2 + a*c*w1Tw2T;
-                                double B = -Rw1 + Rw1T*c - a*c - a*w1w2T + a*c*w1Tw2T;
-                                double C = 1 + c*c;
-                                double D = 1 + c*c;
-                                double E = -w1w2 + w1Tw2*c + w1w2T*c - w1Tw2T*c*c;
+                                double RR = Rsq + 2*Rw2T*cone2.a - 2*Rw1T*cone2.a + cone2.a*cone2.a - 2*w1Tw2T*cone2.a*cone2.a + cone2.a*cone2.a;
+                                double A = Rw2 + Rw2T*cone2.c - cone2.c*cone2.a - cone2.a*w1Tw2 + cone2.a*cone2.c*w1Tw2T;
+                                double B = -Rw1 + Rw1T*cone2.c - cone2.a*cone2.c - cone2.a*w1w2T + cone2.a*cone2.c*w1Tw2T;
+                                double C = 1 + cone2.c*cone2.c;
+                                double D = 1 + cone2.c*cone2.c;
+                                double E = -w1w2 + w1Tw2*cone2.c + w1w2T*cone2.c - w1Tw2T*cone2.c*cone2.c;
 
                                 
                                 double lambda, mu;
@@ -184,7 +181,7 @@ bool overlapSP ( class teilchen cone1, class teilchen cone2, std::vector<double>
                                         else{
                                             RR = RR + 2*lambda*A + 2*mu*B + lambda*lambda*C + mu*mu*D + 2*mu*lambda*E;
 
-                                            double antipara = Rw1T + lambda*w1Tw2 - lambda*c*w1Tw2T + a*w1Tw2T - a + mu*c;
+                                            double antipara = Rw1T + lambda*w1Tw2 - lambda*cone1.c*w1Tw2T + cone1.a*w1Tw2T - cone1.a + mu*cone1.c;
 
                                             if(RR < 1e-8 || antipara < 0 ) return true;
                                             else return false;

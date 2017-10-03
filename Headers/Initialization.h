@@ -3,20 +3,6 @@ void Init(){
 
     std::ifstream status("Save/status.txt");
 
-    Config.rhoN = rho0/Config.Vsys;
-    Config.Vbox = N/Config.rhoN;
-        
-    Config.l[0] =pow(Config.Vbox,1.0/3.0);
-    Config.l[1] = Config.l[0];
-    Config.l[2] = Config.l[0];
-
-	Config.W.resize(3,0); 
-	Config.w.resize(3,0); 
-
-    Config.W[0] = (int)(Config.l[0]/rlist); 
-    Config.W[1] = (int)(Config.l[1]/rlist); 
-    Config.W[2] = (int)(Config.l[2]/rlist); 
-
     if(status) status >> restart;
     else{
         std::cerr << "There is no Save/status.txt file! I don't know if I have to restart." << std::endl;
@@ -71,6 +57,8 @@ void Init(){
                 newpart.dist = rdist-Rdist;
                 newpart.R = Rsp;
                 newpart.r = rsp;
+                newpart.c = (Rsp-rsp)/(rdist-Rdist);
+                newpart.a = Rsp - newpart.Rdist*newpart.c;
 
                 newpart.ori.push_back(0); 
                 newpart.ori.push_back(0); 
@@ -136,6 +124,9 @@ void Init(){
             }
         }
     }
+
+    Config.W.resize(3,0); 
+    Config.w.resize(3,0); 
 
     RenewList();
 

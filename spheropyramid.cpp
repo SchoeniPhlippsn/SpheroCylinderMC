@@ -81,6 +81,9 @@ int main(int argc, char** argv){
 
     Config.Vsys /= N;
 
+    rlist = 2*rsphere + 0.1;
+    rlist_2 = rlist*rlist;  
+    maxpos = 0.2*rlist;
 
 	gen.seed(seed);
 

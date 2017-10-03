@@ -8,6 +8,8 @@ class teilchen{
     double dist;
     double rdist;
     double Rdist;
+    double a;
+    double c;
 	int cell;
 
         private:
@@ -112,6 +114,9 @@ void system::read (std::string file, double Rdist, double rdist ){
         iFile >> part[v].pos[0] >> part[v].pos[1] >> part[v].pos[2] >> part[v].ori[0] >> part[v].ori[1] >> part[v].ori[2] >> part[v].R >> part[v].r >> part[v].Rdist >> part[v].rdist; 
 
         part[v].dist=part[v].Rdist+part[v].rdist;
+
+        part[v].c = (part[v].R-part[v].r)/part[v].dist;
+        part[v].a = part[v].R - part[v].Rdist*part[v].c;
     }
     for( v = Nc ; v < part.size(); v++){
         part[v].pos.resize(3);

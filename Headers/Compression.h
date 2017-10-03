@@ -30,11 +30,9 @@ void Compression(){
             }
         }
         RenewList();
-
        
         Config.write("Save/Config.dat",1);
     }
-    Config.write("Config.dat",0);
 
     int zahl = 0;
     while( zahl < 10 ){ 
@@ -45,14 +43,15 @@ void Compression(){
         if (acceptance > 0.55){
             if( pos_lambda < maxpos) pos_lambda += 0.05;
             else pos_lambda = maxpos;
-            if( ori_lambda < maxpos) ori_lambda += 0.02;
+            if( ori_lambda < maxpos) ori_lambda += 0.05;
             else ori_lambda = maxpos;
             zahl=0;
         }
         if (acceptance < 0.45){
             if( pos_lambda < 0.01 ) pos_lambda *= 0.5;
             else pos_lambda -= 0.01;
-            if( ori_lambda > 0.01 ) ori_lambda -= 0.01;
+            if( ori_lambda < 0.01 ) ori_lambda *= 0.5;
+            else ori_lambda -= 0.01;
             zahl=0;
         }
         

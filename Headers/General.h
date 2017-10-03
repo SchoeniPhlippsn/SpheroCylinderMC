@@ -1,8 +1,8 @@
 
 //hardWalls main
-const double rlist = 3.1;
-const double rlist_2 = rlist*rlist;
-const double maxpos = 0.2*rlist;
+double rlist;
+double rlist_2;
+double maxpos;
 int sx,sy,sz;
 long N; //# of particles
 long seed;
