@@ -17,6 +17,8 @@ boost::random::uniform_01<> uni;
 
 int main(int argc, char** argv){
 
+    std::cout << "This version contains the neighbourhood list optimized for 2 spherocylinders in a pool of spheres!" << std::endl;
+
 	Config.Nc=2; //# of spherocylinder
 	Config.Ns=498; //# of spheres
 	seed=42;
