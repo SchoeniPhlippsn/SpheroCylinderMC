@@ -236,9 +236,9 @@ void Compression_step(){
             std::cout << "and changed pos_lambda=" << pos_lambda << " and ori_lambda=" <<  ori_lambda << std::endl;
         }
         if (acceptance < 0.5){
-            if( pos_lambda < 0.01 ) pos_lambda *= 0.5;
+            if( pos_lambda < 0.01 ) pos_lambda = 0.01;
             else pos_lambda -= 0.01;
-            if( ori_lambda < 0.01 ) ori_lambda *= 0.5;
+            if( ori_lambda < 0.01 ) ori_lambda = 0.01;
             else ori_lambda -= 0.01;
             std::cout << "and changed pos_lambda=" << pos_lambda << " and ori_lambda=" <<  ori_lambda << std::endl;
         }

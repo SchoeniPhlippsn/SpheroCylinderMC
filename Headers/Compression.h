@@ -48,9 +48,9 @@ void Compression(){
             zahl=0;
         }
         if (acceptance < 0.45){
-            if( pos_lambda < 0.01 ) pos_lambda *= 0.5;
+            if( pos_lambda < 0.01 ) pos_lambda = 0.01;
             else pos_lambda -= 0.01;
-            if( ori_lambda < 0.01 ) ori_lambda *= 0.5;
+            if( ori_lambda < 0.01 ) ori_lambda = 0.01;
             else ori_lambda -= 0.01;
             zahl=0;
         }

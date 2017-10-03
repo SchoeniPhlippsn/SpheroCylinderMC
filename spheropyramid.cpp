@@ -113,15 +113,16 @@ int main(int argc, char** argv){
             acceptance = static_cast<double>(acc)/(100*N);
             std::cout << Config.step << " " << acceptance << std::endl;
             if (acceptance > 0.55){
-                if( pos_lambda < maxpos) pos_lambda += 0.1;
+                if( pos_lambda < maxpos) pos_lambda += 0.05;
                 else pos_lambda = maxpos;
-                if( ori_lambda < maxpos) ori_lambda += 0.02;
+                if( ori_lambda < maxpos) ori_lambda += 0.05;
                 else ori_lambda = maxpos;
             }
             if (acceptance < 0.45){
-                if( pos_lambda < 0.01 ) pos_lambda *= 0.5;
+                if( pos_lambda < 0.01 ) pos_lambda = 0.01;
                 else pos_lambda -= 0.01;
-                if( ori_lambda > 0.01 ) ori_lambda -= 0.01;
+                if( ori_lambda < 0.01 ) ori_lambda = 0.01;
+                else ori_lambda -= 0.01;
             }
             acc=0;
         }
