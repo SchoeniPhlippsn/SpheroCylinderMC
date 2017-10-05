@@ -94,23 +94,32 @@ bool overlapSP ( class teilchen cone1, class teilchen cone2, std::vector<double>
                         double lambdaa = 0;
                         double muu = 0;
 
-                        if(fabs(w1w2) < 1e-6 || fabs(w1w2*w1w2 - 1) < 1e-6 )  return false;
+                        if( fabs(w1w2*w1w2 - 1) < 1e-6 )  return false;
                         else{
-                            lambdaa = (Rw2 - Rw1*w1w2)/(w1w2*w1w2-1);
-                            if(lambdaa > cone2.rdist) lambdaa = cone2.rdist;
-                            if(lambdaa < -cone2.Rdist) lambdaa = -cone2.Rdist;
-                            muu = (Rw2 + lambdaa)/w1w2;
-                            if(muu > rdist){ 
-                                muu = rdist;
-                                lambdaa= muu*w1w2-Rw2;
+                            if(fabs(w1w2) < 1e-6){
+                                lambdaa = -Rw2;
+                                muu = Rw1;
                                 if(lambdaa > rdist) lambdaa = rdist;
+                                else if(muu < -Rdist) muu = -Rdist;
+                                if(muu > rdist) muu = rdist;
                                 else if(lambdaa < -Rdist) lambdaa = -Rdist;
                             }else{
-                                if(muu < -Rdist){ 
-                                    muu = -Rdist;
+                                lambdaa = (Rw2 - Rw1*w1w2)/(w1w2*w1w2-1);
+                                if(lambdaa > cone2.rdist) lambdaa = cone2.rdist;
+                                if(lambdaa < -cone2.Rdist) lambdaa = -cone2.Rdist;
+                                muu = (Rw2 + lambdaa)/w1w2;
+                                if(muu > rdist){ 
+                                    muu = rdist;
                                     lambdaa= muu*w1w2-Rw2;
                                     if(lambdaa > rdist) lambdaa = rdist;
                                     else if(lambdaa < -Rdist) lambdaa = -Rdist;
+                                }else{
+                                    if(muu < -Rdist){ 
+                                        muu = -Rdist;
+                                        lambdaa= muu*w1w2-Rw2;
+                                        if(lambdaa > rdist) lambdaa = rdist;
+                                        else if(lambdaa < -Rdist) lambdaa = -Rdist;
+                                    }
                                 }
                             }
                             for (int v = 0; v < 3; v++) R_neu[v] = R[v] + lambdaa*cone2.ori[v] - muu*cone1.ori[v];
