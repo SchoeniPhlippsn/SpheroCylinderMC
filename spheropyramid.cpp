@@ -34,9 +34,9 @@ int main(int argc, char** argv){
     Rsp = 0.616;
     rsp = 0.267;
     Vratio = 0.1;
-    finstep = 500000;
-    savestep = 500;
-    backupstep = 100;
+    finstep = 5000000;
+    savestep = 1000;
+    backupstep = 500;
 
 	for (int argi=1; argi<argc; argi++){
         std::string argvi = argv[argi];
@@ -85,7 +85,7 @@ int main(int argc, char** argv){
 
     rlist = 2*rsphere + 0.1;
     rlist_2 = rlist*rlist;  
-    maxpos = 0.2*rlist;
+    maxpos = 0.5*rlist;
 
 	gen.seed(seed);
 
