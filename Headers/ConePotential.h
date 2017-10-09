@@ -147,6 +147,28 @@ bool overlapSP ( class teilchen cone1, class teilchen cone2, std::vector<double>
                                     w2T[v] *= -norm2;
                                 }
 
+
+                                std::vector<double> w1T_1 = kreuz(cone1.ori,w1T,cone2.ori);
+                                std::vector<double> w2T_1 = kreuz(cone2.ori,w2T,cone1.ori);
+
+                                double normal1=0;
+                                double normal2=0;
+
+                                for (int v = 0; v < 3; v++){
+                                    w1T[v] += 0.25*(w1w2+1)*w1T_1[v];
+                                    normal1 += w1T[v]*w1T[v];
+                                    w2T[v] += 0.25*(w1w2+1)*w2T_1[v];
+                                    normal2 += w2T[v]*w2T[v];
+                                }
+
+                                normal1 = 1/sqrt(normal1);
+                                normal2 = 1/sqrt(normal2);
+
+                                for (int v = 0; v < 3; v++){
+                                    w1T[v] *= normal1;
+                                    w2T[v] *= normal2;
+                                }
+
                                 
                                 double Rw1T = scal_p(R,w1T);
                                 double Rw2T = scal_p(R,w2T);

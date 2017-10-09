@@ -32,3 +32,19 @@ double scal_p (std::vector<double> a1, std::vector<double> a2){ // scalar produc
 	for(int v=0; v<3; v++) r += a1[v]*a2[v];
 	return r;
 }
+
+
+std::vector<double> kreuz(std::vector<double> a, std::vector<double> b, std::vector<double> c){ // distance
+    std::vector<double> oo (3,0);
+    oo[0] = a[1]*b[2] - a[2]*b[1];
+    oo[1] = a[2]*b[0] - a[0]*b[2];
+    oo[2] = a[0]*b[1] - a[1]*b[0];
+
+    double o = scal_p(oo,c);
+    if (o > 0){
+        oo[0] *=-1;
+        oo[1] *=-1;
+        oo[2] *=-1;
+    }
+    return oo;
+}
