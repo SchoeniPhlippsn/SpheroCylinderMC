@@ -99,26 +99,26 @@ bool overlapSP ( class teilchen cone1, class teilchen cone2, std::vector<double>
                             if(fabs(w1w2) < 1e-6){
                                 lambdaa = -Rw2;
                                 muu = Rw1;
-                                if(lambdaa > rdist) lambdaa = rdist;
-                                else if(muu < -Rdist) muu = -Rdist;
-                                if(muu > rdist) muu = rdist;
-                                else if(lambdaa < -Rdist) lambdaa = -Rdist;
+                                if(lambdaa > cone2.rdist) lambdaa = cone2.rdist;
+                                else if(muu < -cone1.Rdist) muu = -cone1.Rdist;
+                                if(muu > cone1.rdist) muu = cone1.rdist;
+                                else if(lambdaa < -cone2.Rdist) lambdaa = -cone2.Rdist;
                             }else{
                                 lambdaa = (Rw2 - Rw1*w1w2)/(w1w2*w1w2-1);
                                 if(lambdaa > cone2.rdist) lambdaa = cone2.rdist;
                                 if(lambdaa < -cone2.Rdist) lambdaa = -cone2.Rdist;
                                 muu = (Rw2 + lambdaa)/w1w2;
-                                if(muu > rdist){ 
-                                    muu = rdist;
+                                if(muu > cone1.rdist){ 
+                                    muu = cone1.rdist;
                                     lambdaa= muu*w1w2-Rw2;
-                                    if(lambdaa > rdist) lambdaa = rdist;
-                                    else if(lambdaa < -Rdist) lambdaa = -Rdist;
+                                    if(lambdaa > cone2.rdist) lambdaa = cone2.rdist;
+                                    else if(lambdaa < -cone2.Rdist) lambdaa = -cone2.Rdist;
                                 }else{
-                                    if(muu < -Rdist){ 
-                                        muu = -Rdist;
+                                    if(muu < -cone1.Rdist){ 
+                                        muu = -cone1.Rdist;
                                         lambdaa= muu*w1w2-Rw2;
-                                        if(lambdaa > rdist) lambdaa = rdist;
-                                        else if(lambdaa < -Rdist) lambdaa = -Rdist;
+                                        if(lambdaa > cone2.rdist) lambdaa = cone2.rdist;
+                                        else if(lambdaa < -cone2.Rdist) lambdaa = -cone2.Rdist;
                                     }
                                 }
                             }
@@ -175,10 +175,8 @@ bool overlapSP ( class teilchen cone1, class teilchen cone2, std::vector<double>
                                 double w1Tw2T = scal_p(w1T,w2T);
                                 double w1w2T = scal_p(cone1.ori,w2T);
                                 double w1Tw2 = scal_p(w1T,cone2.ori);
-                                double w1w2 = scal_p(cone1.ori,cone2.ori);
 
-                                double RR = Rsq + 2*Rw2T*cone2.a - 2*Rw1T*cone2.a + cone2.a*cone2.a - 2*w1Tw2T*cone2.a*cone2.a + cone2.a*cone2.a;
-                                double A = Rw2 + Rw2T*cone2.c - cone2.c*cone2.a - cone2.a*w1Tw2 + cone2.a*cone2.c*w1Tw2T;
+                                double A = Rw2 - Rw2T*cone2.c - cone2.c*cone2.a - cone2.a*w1Tw2 + cone2.a*cone2.c*w1Tw2T;
                                 double B = -Rw1 + Rw1T*cone2.c - cone2.a*cone2.c - cone2.a*w1w2T + cone2.a*cone2.c*w1Tw2T;
                                 double C = 1 + cone2.c*cone2.c;
                                 double D = 1 + cone2.c*cone2.c;
@@ -198,6 +196,7 @@ bool overlapSP ( class teilchen cone1, class teilchen cone2, std::vector<double>
 
                                     if(mu>cone1.rdist || mu<-cone1.Rdist) return false;
                                     else{ 
+                                        double RR = Rsq + 2*Rw2T*cone2.a - 2*Rw1T*cone2.a + cone2.a*cone2.a - 2*w1Tw2T*cone2.a*cone2.a + cone2.a*cone2.a;
                                         RR = RR + 2*lambda*A + 2*mu*B + lambda*lambda*C + mu*mu*D + 2*mu*lambda*E;
                                         if(RR < 1e-6 ) return true;
                                         else return false; 
@@ -210,6 +209,7 @@ bool overlapSP ( class teilchen cone1, class teilchen cone2, std::vector<double>
 
                                         if(mu>cone1.rdist || mu<-cone1.Rdist) return false;
                                         else{
+                                            double RR = Rsq + 2*Rw2T*cone2.a - 2*Rw1T*cone2.a + cone2.a*cone2.a - 2*w1Tw2T*cone2.a*cone2.a + cone2.a*cone2.a;
                                             RR = RR + 2*lambda*A + 2*mu*B + lambda*lambda*C + mu*mu*D + 2*mu*lambda*E;
 
                                             double antipara = Rw1T + lambda*w1Tw2 - lambda*cone1.c*w1Tw2T + cone1.a*w1Tw2T - cone1.a + mu*cone1.c;

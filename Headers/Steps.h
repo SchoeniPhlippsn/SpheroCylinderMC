@@ -130,14 +130,14 @@ void Move_step(){
 
                 if(MovedParticle.cell != k){
                     if(Config.head[MovedParticle.cell] != randP ){
-                        int v = Config.head[MovedParticle.cell];
-                        int vv = Config.link[v];
+                        int vvv = Config.head[MovedParticle.cell];
+                        int vv = Config.link[vvv];
                         while(vv!=randP){ 
-                            v = vv;
-                            vv = Config.link[v];
+                            vvv = vv;
+                            vv = Config.link[vvv];
                         }
                         
-                        Config.link[v] = Config.link[randP];
+                        Config.link[vvv] = Config.link[randP];
                     }else{
                         Config.head[MovedParticle.cell] = Config.link[randP];
                     }
